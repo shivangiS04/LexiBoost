@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <title>Automated Essay Scoring</title>
+
+    <style>
+      @font-face {
+        font-family: 'Product Sans';
+        font-style: normal;
+        font-weight: 400;
+        src: local('Open Sans'), local('OpenSans'),
+        url(https://fonts.gstatic.com/s/productsans/v5/HYvgU2fE2nRJvZ5JFAumwegdm0LZdjqr5-oayXSOefg.woff2) format('woff2');
+      }
+
+      body {
+        font-family: 'Product Sans', sans-serif;
+        background-image: url('back.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        padding-left: 60px;
+        padding-top: 40px;
+      }
+
+      h1 {
+        font-size: 50px;
+        color: white;
+      }
+
+      textarea {
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: white;
+        border-radius: 20px;
+        outline: none;
+        border: 1px solid white;
+        width: 90%;
+      }
+
+      h3 {
+        color: white;
+        margin-top: 20px;
+      }
+
+      .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(255,255,255,.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>AUTOMATED ESSAY</h1>
+    <h1>SCORING</h1>
+
+    <div class="input-group mt-4">
+      <textarea id="main" placeholder="Enter Essay Here" rows="11"></textarea>
+    </div>
+
+    <button type="button" class="btn btn-outline-light mt-3" onclick="senddata()">Score my Essay!</button>
+
+    <h3 id="output"></h3>
+    <div id="loader" style="display:none;">
+      <div class="loading"></div> <span style="color:white;margin-left:10px;">Scoring your essay...</span>
+    </div>
+
+    <script>
+      function senddata() {
+        const text = document.getElementById("main").value;
+        const output = document.getElementById("output");
+        const loader = document.getElementById("loader");
+
+        if (text.trim().length < 20) {
+          output.innerHTML = "Please enter a longer essay (at least 20 characters).";
+          return;
+        }
+
+        // Clear previous result and show loader
+        output.innerHTML = "";
+        loader.style.display = "block";
+
+        fetch("http://127.0.0.1:5000/score", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ text: text })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(result => {
+          // Hide loader
+          loader.style.display = "none";
+
+          if (!result || result.score === undefined || result.score === null) {
+            output.innerHTML = "Your grade is: 0/10";
+          } else {
+            output.innerHTML = "Your grade is: " + result.score + "/10";
+          }
+          console.log('Success:', result);
+        })
+        .catch(error => {
+          // Hide loader
+          loader.style.display = "none";
+
+          console.error('Error:', error);
+          output.innerHTML = "An error occurred while scoring. Please ensure the server is running at http://127.0.0.1:5000";
+        });
+      }
+
+      // Test connection to server when page loads
+      window.addEventListener('DOMContentLoaded', () => {
+        fetch("http://127.0.0.1:5000/health")
+          .then(response => response.json())
+          .then(data => console.log("Server connection: OK"))
+          .catch(error => console.warn("Server not available. Start your Flask server first."));
+      });
+    </script>
+  </body>
+</html>
