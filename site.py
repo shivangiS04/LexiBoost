@@ -134,6 +134,7 @@ def api_info():
 
 # ----------- Run App -----------
 
+
 if __name__ == '__main__':
     print("Starting Essay Scoring API server...")
     print(f"Make sure your HTML file is at: {WEBAPP_PATH}/mainpage.html")
