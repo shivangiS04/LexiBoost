@@ -18,7 +18,8 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Path to the webapp directory
-WEBAPP_PATH = '/Users/shivangisingh/Desktop/LexiBoost/webapp'
+WEBAPP_PATH = os.path.join(os.getcwd(), 'webapp')
+
 
 # ----------- Helper Functions -----------
 
