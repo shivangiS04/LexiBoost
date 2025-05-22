@@ -86,7 +86,7 @@ def convertToVec(text):
 # Serve the main HTML page
 @app.route('/')
 def serve_frontend():
-    return send_from_directory(WEBAPP_PATH, 'mainpage.html')
+    return send_from_directory(WEBAPP_PATH, 'index.html')
 
 # Serve static files like images, css, etc.
 @app.route('/<path:path>')
@@ -137,7 +137,7 @@ def api_info():
 
 if __name__ == '__main__':
     print("Starting Essay Scoring API server...")
-    print(f"Make sure your HTML file is at: {WEBAPP_PATH}/mainpage.html")
+    print(f"Make sure your HTML file is at: {WEBAPP_PATH}/index.html")
     print(f"Web interface available at: http://127.0.0.1:5000")
     print(f"API info available at: http://127.0.0.1:5000/api")
     app.run(debug=True)
